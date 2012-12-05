@@ -1,4 +1,4 @@
-nast2d
+SONaSt2D
 ======
 
-2D finite difference simulation of the incompressible Navier-Stokes equation.
+HERE BE DRAGONS
