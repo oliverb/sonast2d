@@ -6,11 +6,15 @@ def solve_equation(p, rhs, flag, num_fc, dx, dy, eps, max_it, omega):
     residual = 1E10
 
     while iteration<max_it and residual>eps:
-        pressure_norm = _compute_pressure_norm(p, flag, num_fc)
+        if iteration%25 == 0:
+            pressure_norm = _compute_pressure_norm(p, flag, num_fc)
+            
         _set_boundary_conditions(p, flag, dx, dy)
         _relax(p, rhs, flag, dx, dy, omega)
-        residual = _compute_normalized_residual(p, pressure_norm, rhs, 
-                                                flag, num_fc, dx, dy)
+
+        if iteration%25 == 0:
+            residual = _compute_normalized_residual(p, pressure_norm, rhs, 
+                                                    flag, num_fc, dx, dy)
 
         iteration += 1
 
