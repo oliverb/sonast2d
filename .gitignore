@@ -1,5 +1,8 @@
 *.py[cod]
 
+# Output files
+*.vtk
+
 # C extensions
 *.so
 
