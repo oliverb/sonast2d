@@ -2,34 +2,58 @@ from scipy import weave
 from .. import cmacros
 
 # For testing only no slip condition
-def set_outer_boundary(u, v, flag, boundary={}):
-    # north = boundary.get('north', 'noslip')
-    # east = boundary.get('east', 'noslip')
-    # south = boundary.get('south', 'noslip')
-    # west = boundary.get('west', 'noslip')
+def set_outer_boundary(u, v, boundary={}):
+    north = boundary.get('north', 'noslip')
+    east = boundary.get('east', 'noslip')
+    south = boundary.get('south', 'noslip')
+    west = boundary.get('west', 'noslip')
 
     m, n = u.shape
     imax = m - 2
-    jmax = m - 2
+    jmax = n - 2
 
     # Left wall noslip
-    u[0,1:jmax+1] = 0.0
-    v[0,1:jmax+1] = -1.0*v[1,1:jmax+1]
+    if west == 'noslip':
+        u[0,1:jmax+1] = 0.0
+        v[0,1:jmax+1] = -1.0*v[1,1:jmax+1]
+    elif west == 'slip':
+        u[0,1:jmax+1] = 0.0
+        v[0,1:jmax+1] = v[1,1:jmax+1]
 
     # Right wall noslip
-    u[imax,1:jmax+1] = 0.0
-    v[imax+1,1:jmax+1] = -1.0*v[imax,1:jmax+1]
+    if east == 'noslip':
+        u[imax,1:jmax+1] = 0.0
+        v[imax+1,1:jmax+1] = -1.0*v[imax,1:jmax+1]
+    elif east == 'slip':
+        u[imax,1:jmax+1] = 0.0
+        v[imax+1,1:jmax+1] = v[imax,1:jmax+1]
 
     # Top wall noslip
-    v[1:imax+1,jmax] = 0.0
-    u[1:imax+1,jmax+1] = -1.0*u[1:imax+1,jmax]
+    if north == 'noslip':
+        v[1:imax+1,jmax] = 0.0
+        u[1:imax+1,jmax+1] = -1.0*u[1:imax+1,jmax]
+    elif east == 'slip':
+        v[1:imax+1,jmax] = 0.0
+        u[1:imax+1,jmax+1] = u[1:imax+1,jmax]
 
     # Bottom wall noslip
-    v[1:imax+1,0] = 0.0
-    u[1:imax+1,0] = -1.0*u[1:imax+1,1]
+    if south == 'noslip':
+        v[1:imax+1,0] = 0.0
+        u[1:imax+1,0] = -1.0*u[1:imax+1,1]
+    elif south == 'slip':
+        v[1:imax+1,0] = 0.0
+        u[1:imax+1,0] = u[1:imax+1,1] 
 
     # Driven cavity
-    u[1:imax+1,jmax+1] = 2.0-u[1:imax+1,jmax]
+    if 'scenario' in boundary:
+        if boundary['scenario'] == 'cavity':
+            u[1:imax+1,jmax+1] = 2.0-u[1:imax+1,jmax]
+        if boundary['scenario'] == 'obstacle':
+            u[0,1:jmax+1] = 1.0
+            v[0,1:jmax+1] = -1.0*v[1,1:jmax+1]
+
+            u[imax,1:jmax+1] = 1.0
+            v[imax,1:jmax+1] = -1.0*v[imax-1,1:jmax+1]
 
 def set_obstacle_slip(u, v, flag):
     code = """

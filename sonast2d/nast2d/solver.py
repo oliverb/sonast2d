@@ -14,6 +14,7 @@ def solve(problem):
     ylength = problem.ylength
     Re = problem.Re
     geometry = problem.geo
+    binfo = problem.boundary
 
     imax = problem.imax
     jmax = problem.jmax
@@ -38,22 +39,20 @@ def solve(problem):
 
 
     num_fc, flag = flagfield.generate_flagfield(geometry)
-    print num_fc
-    print flag
-
+    print flag.shape
 
     t = 0.0
     iteration = 1
     acc_poisson_it = 0
-    t_end = 5.0
+    t_end = problem.t_end
     output_n = 0
-    output_delta = 0.1
+    output_delta = 1.0
 
     Y = numpy.array([(j-1)*dy+dy/2.0 for j in range(1, jmax+1)])
 
     while t < t_end:
         dt = time.adaptive_stepwidth(dx, dy, u, v, Re, tau)
-        boundary.set_outer_boundary(u, v)
+        boundary.set_outer_boundary(u, v, binfo)
         boundary.set_obstacle_slip(u, v, flag)
         velocity.velocity_guess(u, v, f, g, flag, dt, dx, dy, alpha, Re)
         velocity.compute_rhs(f, g, rhs, dt, dx, dy)
