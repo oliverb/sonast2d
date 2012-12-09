@@ -7,6 +7,7 @@ class DrivenCavity:
     def __init__(self, imax=64, jmax=64):
         self.xlength = 1.0
         self.ylength = 1.0
+        self.t_end = 5.0
 
         self.imax = imax
         self.jmax = jmax 
