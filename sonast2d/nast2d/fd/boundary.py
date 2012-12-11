@@ -12,7 +12,6 @@ def set_outer_boundary(u, v, boundary={}):
     imax = m - 2
     jmax = n - 2
 
-    # Left wall noslip
     if west == 'noslip':
         u[0,1:jmax+1] = 0.0
         v[0,1:jmax+1] = -1.0*v[1,1:jmax+1]
@@ -20,7 +19,6 @@ def set_outer_boundary(u, v, boundary={}):
         u[0,1:jmax+1] = 0.0
         v[0,1:jmax+1] = v[1,1:jmax+1]
 
-    # Right wall noslip
     if east == 'noslip':
         u[imax,1:jmax+1] = 0.0
         v[imax+1,1:jmax+1] = -1.0*v[imax,1:jmax+1]
@@ -28,15 +26,13 @@ def set_outer_boundary(u, v, boundary={}):
         u[imax,1:jmax+1] = 0.0
         v[imax+1,1:jmax+1] = v[imax,1:jmax+1]
 
-    # Top wall noslip
     if north == 'noslip':
         v[1:imax+1,jmax] = 0.0
         u[1:imax+1,jmax+1] = -1.0*u[1:imax+1,jmax]
-    elif east == 'slip':
+    elif north == 'slip':
         v[1:imax+1,jmax] = 0.0
         u[1:imax+1,jmax+1] = u[1:imax+1,jmax]
 
-    # Bottom wall noslip
     if south == 'noslip':
         v[1:imax+1,0] = 0.0
         u[1:imax+1,0] = -1.0*u[1:imax+1,1]
