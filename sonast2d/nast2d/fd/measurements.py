@@ -2,13 +2,13 @@ from scipy import weave
 
 from .. import cmacros
 
-def dissipation(u, v, flag, dx, dy):
+def dissipation_l2(u, v, flag, dx, dy):
     # Computes dissipation at cell centers
     # C code computes at grid line intersections
     code = """
         #line 9 "measurements.py"
         int imax = Nu[0]-2;
-        int jmax = Nu[0]-2;
+        int jmax = Nu[1]-2;
 
         double dudx = 0.0;
         double dudy = 0.0;
