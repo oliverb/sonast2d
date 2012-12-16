@@ -38,9 +38,9 @@ def velocity_guess(u, v, f, g, flag, dt, dx, dy, alpha, Re):
 
                     F2(i,j) = U2(i,j) + dt*( (dd_u_x + dd_u_y)/Re - d_u2_x - d_uv_y );
                 }
-                // else {
-                // F2(i,j) = U2(i,j);
-                //}
+                else {
+                    F2(i,j) = U2(i,j);
+                }
             }
         }
 
@@ -70,9 +70,9 @@ def velocity_guess(u, v, f, g, flag, dt, dx, dy, alpha, Re):
 
                     G2(i,j) = V2(i,j) + dt*( (dd_u_x + dd_u_y)/Re - d_u2_x - d_uv_y );
                 }
-                //  else {
-                //      G2(i,j) = V2(i,j);
-                // }
+                else {
+                    G2(i,j) = V2(i,j);
+                }
             }
         }
 
@@ -86,7 +86,7 @@ def velocity_guess(u, v, f, g, flag, dt, dx, dy, alpha, Re):
             G2(i,jmax) = V2(i,jmax);
         }
 
-        /* Obstacle boundary */
+        /* Obstacle boundary 
         for(int i=1; i<=imax; i++) {
             for(int j=1; j<=jmax; j++) {
                 if( !(FLAG2(i,j)&FC) && FLAG2(i,j)!=OC ) {
@@ -123,6 +123,7 @@ def velocity_guess(u, v, f, g, flag, dt, dx, dy, alpha, Re):
                 }
             }
         }
+        */
         """
 
     variables = "u v f g flag dt dx dy alpha Re".split(" ")
@@ -155,7 +156,7 @@ def velocity_correction(u, v, p, f, g, flag, dt, dx, dy):
     variables = "u v p f g flag dt dx dy".split(" ")
     weave.inline(code, variables, define_macros=cmacros.flag_dict)
 
-def compute_rhs(f, g, rhs, dt, dx, dy):
+def compute_rhs(f, g, rhs, flag, dt, dx, dy):
     code = """
         #line 159 "velocity.py"
         int imax = Nf[0]-2;
@@ -163,12 +164,14 @@ def compute_rhs(f, g, rhs, dt, dx, dy):
 
         for(int i=1; i<=imax; i++) {
             for(int j=1; j<=jmax; j++) {
-                RHS2(i, j) = (F2(i, j) - F2(i-1, j))/dx
-                            +(G2(i, j) - G2(i, j-1))/dy;
-                RHS2(i, j) = RHS2(i, j)/dt;
+                if(FLAG2(i,j)&FC) {
+                    RHS2(i, j) = (F2(i, j) - F2(i-1, j))/dx
+                                +(G2(i, j) - G2(i, j-1))/dy;
+                    RHS2(i, j) = RHS2(i, j)/dt;
+                }
             }
         }
         """
 
-    variables = "f g rhs dt dx dy".split(" ")
+    variables = "f g rhs flag dt dx dy".split(" ")
     weave.inline(code, variables, define_macros=cmacros.flag_dict)
