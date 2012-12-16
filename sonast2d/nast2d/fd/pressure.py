@@ -42,7 +42,7 @@ def _set_boundary_conditions(p, flag, dx, dy):
 
         for(int i=1; i<=imax; i++) {
             for(int j=1; j<=jmax; j++) {
-                if( !(FLAG2(i, j)&FC) && !(FLAG2(i, j)!=OC)) {
+                if( !(FLAG2(i, j)&FC) && (FLAG2(i, j)!=OC)) {
                     switch(FLAG2(i, j)) {
                     case B_N:
                         P2(i, j) = P2(i, j+1);
@@ -58,15 +58,19 @@ def _set_boundary_conditions(p, flag, dx, dy):
                         break;
                     case B_NE:
                         P2(i, j) = tmp*(dx*dx*P2(i, j+1)+dy*dy*P2(i+1, j));
+                        P2(i,j) = 0.5*(P2(i,j+1)+P2(i+1,j));
                         break;
                     case B_SE:
                         P2(i, j) = tmp*(dx*dx*P2(i, j-1)+dy*dy*P2(i+1, j));
+                        P2(i,j) = 0.5*(P2(i,j-1)+P2(i+1,j));
                         break;
                     case B_SW:
                         P2(i, j) = tmp*(dx*dx*P2(i, j-1)+dy*dy*P2(i-1, j));
+                        P2(i,j) = 0.5*(P2(i,j-1)+P2(i-1,j));
                         break;
                     case B_NW:
                         P2(i, j) = tmp*(dx*dx*P2(i, j+1)+dy*dy*P2(i-1, j));
+                        P2(i,j) = 0.5*(P2(i,j+1)+P2(i-1,j));
                         break;
                     }
                 }
