@@ -71,13 +71,11 @@ class BasisSpline:
 
 if __name__ == '__main__':
     test = BasisSpline(3, numpy.array([0.0, 4.0/3.0, 8.0/3.0, 4.0]))
-    # test.print_in_range()
     c = numpy.array([0.0, 0.8, 0.979795, 0.979795, 0.8, 0.0])
     bI = test.compute_basis_integrals()
     print sum(c*bI)
     func = lambda x: test.evaluate(c, x)
     cI, err = integrate.quad(func, 0.0, 4.0) 
-
     print cI
 
 
