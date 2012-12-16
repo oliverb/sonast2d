@@ -70,14 +70,13 @@ def generate_flagfield(geo):
         }
 
         /* second pass to update boundary information */
-        int flc = 0; // count fluid cells
         for(int i=1; i<=imax; i++) {
             for(int j=1; j<=jmax; j++) {
-                if(!(FLAG2(i,j)&FC)) {
-                    FLAG2(i,j) += (FLAG2(i-1,j)&FC)*B_W
-                                 +(FLAG2(i+1,j)&FC)*B_E
-                                 +(FLAG2(i,j+1)&FC)*B_N
-                                 +(FLAG2(i,j-1)&FC)*B_S;
+                if(!(FLAGS2(i,j)&FC)) {
+                    FLAGS2(i,j) += (FLAGS2(i-1,j)&FC)*B_W
+                                 +(FLAGS2(i+1,j)&FC)*B_E
+                                 +(FLAGS2(i,j+1)&FC)*B_N
+                                 +(FLAGS2(i,j-1)&FC)*B_S;
                 }
                 /* TODO check flagfield for illegal obstacle cells */
             }
