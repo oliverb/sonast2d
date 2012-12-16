@@ -13,43 +13,43 @@ def set_outer_boundary(u, v, boundary={}):
     jmax = n - 2
 
     if west == 'noslip':
-        u[0,1:jmax+1] = 0.0
-        v[0,1:jmax+1] = -1.0*v[1,1:jmax+1]
+        u[0,0:jmax+2] = 0.0
+        v[0,0:jmax+2] = -1.0*v[1,0:jmax+2]
     elif west == 'slip':
-        u[0,1:jmax+1] = 0.0
-        v[0,1:jmax+1] = v[1,1:jmax+1]
+        u[0,0:jmax+2] = 0.0
+        v[0,0:jmax+2] = v[1,0:jmax+2]
 
     if east == 'noslip':
-        u[imax,1:jmax+1] = 0.0
-        v[imax+1,1:jmax+1] = -1.0*v[imax,1:jmax+1]
+        u[imax,0:jmax+2] = 0.0
+        v[imax+1,0:jmax+2] = -1.0*v[imax,0:jmax+2]
     elif east == 'slip':
-        u[imax,1:jmax+1] = 0.0
-        v[imax+1,1:jmax+1] = v[imax,1:jmax+1]
+        u[imax,0:jmax+2] = 0.0
+        v[imax+1,0:jmax+2] = v[imax,0:jmax+2]
 
     if north == 'noslip':
-        v[1:imax+1,jmax] = 0.0
-        u[1:imax+1,jmax+1] = -1.0*u[1:imax+1,jmax]
+        v[0:imax+2,jmax] = 0.0
+        u[0:imax+2,jmax+1] = -1.0*u[0:imax+2,jmax]
     elif north == 'slip':
-        v[1:imax+1,jmax] = 0.0
-        u[1:imax+1,jmax+1] = u[1:imax+1,jmax]
+        v[0:imax+2,jmax] = 0.0
+        u[0:imax+2,jmax+1] = u[0:imax+2,jmax]
 
     if south == 'noslip':
-        v[1:imax+1,0] = 0.0
-        u[1:imax+1,0] = -1.0*u[1:imax+1,1]
+        v[0:imax+2,0] = 0.0
+        u[0:imax+2,0] = -1.0*u[0:imax+2,1]
     elif south == 'slip':
-        v[1:imax+1,0] = 0.0
-        u[1:imax+1,0] = u[1:imax+1,1] 
+        v[0:imax+2,0] = 0.0
+        u[0:imax+2,0] = u[0:imax+2,1] 
 
-    # Driven cavity
+    # Scenario specific boundary conditions
     if 'scenario' in boundary:
         if boundary['scenario'] == 'cavity':
-            u[1:imax+1,jmax+1] = 2.0-u[1:imax+1,jmax]
+            u[0:imax+2,jmax+1] = 2.0-u[0:imax+2,jmax]
         if boundary['scenario'] == 'obstacle':
-            u[0,1:jmax+1] = 1.0
-            v[0,1:jmax+1] = -1.0*v[1,1:jmax+1]
+            u[0,0:jmax+2] = 1.0
+            v[0,0:jmax+2] = -1.0*v[1,0:jmax+2]
 
-            u[imax,1:jmax+1] = 1.0
-            v[imax,1:jmax+1] = -1.0*v[imax-1,1:jmax+1]
+            u[imax,0:jmax+2] = 1.0
+            v[imax,0:jmax+2] = -1.0*v[imax-1,0:jmax+2]
 
 def set_obstacle_slip(u, v, flag):
     code = """
