@@ -59,10 +59,10 @@ def solve(problem):
         # At this point we compute the dissipation at time t, NOT t+dt,
         # since measurements.dissipation assumes that the obstacle cells
         # are set for enforcement of boundary conditions.
-        dissipation = measurements.dissipation(u, v, flag, dx, dy)
+        dissipation = measurements.dissipation_l2(u, v, flag, dx, dy)
 
         velocity.velocity_guess(u, v, f, g, flag, dt, dx, dy, alpha, Re)
-        velocity.compute_rhs(f, g, rhs, dt, dx, dy)
+        velocity.compute_rhs(f, g, rhs, flag, dt, dx, dy)
         it, res = pressure.solve_equation(p, rhs, flag, num_fc, dx, dy, eps, max_it, omega)
         velocity.velocity_correction(u, v, p, f, g, flag, dt, dx ,dy)
 
