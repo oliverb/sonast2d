@@ -1,5 +1,4 @@
 import numpy
-import pylab
 
 from nast2d.fd import time
 from nast2d.fd import boundary
