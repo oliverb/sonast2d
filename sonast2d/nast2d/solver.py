@@ -27,6 +27,8 @@ def solve(problem):
     eps = problem.eps
     max_it = problem.max_it
 
+    basename = problem.name
+
     dx = xlength/imax
     dy = ylength/jmax
 
@@ -51,6 +53,8 @@ def solve(problem):
 
     Y = numpy.array([(j-1)*dy+dy/2.0 for j in range(1, jmax+1)])
 
+    max_diss = 0.0
+
     while t < t_end:
         dt = time.adaptive_stepwidth(dx, dy, u, v, Re, tau)
         boundary.set_outer_boundary(u, v, binfo)
@@ -61,13 +65,17 @@ def solve(problem):
         # are set for enforcement of boundary conditions.
         dissipation = measurements.dissipation_l2(u, v, flag, dx, dy)
 
+        if t > t_end/2.0 and dissipation > max_diss:
+            max_diss = dissipation
+
         velocity.velocity_guess(u, v, f, g, flag, dt, dx, dy, alpha, Re)
         velocity.compute_rhs(f, g, rhs, flag, dt, dx, dy)
         it, res = pressure.solve_equation(p, rhs, flag, num_fc, dx, dy, eps, max_it, omega)
         velocity.velocity_correction(u, v, p, f, g, flag, dt, dx ,dy)
 
         if t >= output_n*output_delta:
-            vtk.output_vector(u, v, flag, dx, dy, output_n, "test")
+            vtk.output_vector(u, v, flag, dx, dy, output_n, basename)
+            vtk.output_flag(flag, dx, dy, output_n, basename)
             output_n += 1
 
         print iteration, t, dt, it, res, dissipation
@@ -75,5 +83,8 @@ def solve(problem):
         acc_poisson_it += it
         t += dt
         iteration += 1
+
+    # rather a callback? :(
+    return max_diss
 
 
