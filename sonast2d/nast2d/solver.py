@@ -74,8 +74,8 @@ def solve(problem):
         velocity.velocity_correction(u, v, p, f, g, flag, dt, dx ,dy)
 
         if t >= output_n*output_delta:
-            vtk.output_vector(u, v, flag, dx, dy, output_n, basename)
-            vtk.output_flag(flag, dx, dy, output_n, basename)
+            vtk.output_vector(u, v, flag, dx, dy, output_n, basename+"uv")
+            vtk.output_flag(flag, dx, dy, output_n, basename+"ff")
             output_n += 1
 
         print iteration, t, dt, it, res, dissipation
