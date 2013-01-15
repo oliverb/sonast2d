@@ -34,6 +34,16 @@ class BasisSpline:
                     self.data[d, i] = fct1*self.data[d-1, i]+fct2*self.data[d-1,i+1]
         return self.data[self.order,0:self.n]
 
+    def compute_basis_matrix(self, xvals):
+        B = [] 
+        for x in xvals:
+            # Need to make a copy, otherwise the b in B just gets
+            # overwritten at the next iteration
+            b = numpy.copy(self.compute_basis_values(x))
+            B.append(b)
+
+        return numpy.array(B)
+
     def compute_basis_integrals(self):
         I = numpy.zeros(self.n)
         for i in range(0, self.n):
