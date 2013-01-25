@@ -13,7 +13,9 @@ def generate_flagfield(geo):
         int imax = Ngeo[0]-2;
         int jmax = Ngeo[1]-2;
 
-        /* border cells are always obstacles */
+        /* border cells are always obstacles, but this is mainly
+         * cosmetics ...
+         */
         for(int i=1; i<=imax; i++) {
             FLAGS2(i,0) = OC + (1-GEO2(i,1))*B_N;
             FLAGS2(i,jmax+1) = OC + (1-GEO2(i,jmax))*B_S;
@@ -28,63 +30,33 @@ def generate_flagfield(geo):
         int flc = 0; // count fluid cells
         for(int i=1; i<=imax; i++) {
             for(int j=1; j<=jmax; j++) {
-                FLAGS2(i,j) = (1-GEO2(i,j))*FC 
-                            + (i==1)?:(1-GEO2(i-1,j))*B_W
-                            + (i==imax)?:(1-GEO2(i+1,j))*B_E
-                            + (j==1)?:(1-GEO2(i,j-1))*B_S
-                            + (j==jmax)?:(1-GEO2(i,j+1))*B_N;
-                flc += 1-GEO2(i,j);
-            }
-        }
-
-        return_val = flc;
-    """
-
-    code2 = """
-        #line 44 "flagfield.py"
-        int imax = Ngeo[0]-2;
-        int jmax = Ngeo[1]-2;
-
-        /* border cells are always obstacles */
-        for(int i=1; i<=imax; i++) {
-            FLAGS2(i,0) = OC + (1-GEO2(i,1))*B_N;
-            FLAGS2(i,jmax+1) = OC + (1-GEO2(i,jmax))*B_S;
-        }
-
-        for(int j=1; j<=jmax; j++) {
-            FLAGS2(0,j) = OC + (1-GEO2(1,j))*B_E;
-            FLAGS2(imax+1,j) = OC + (1-GEO2(imax,j))*B_W;
-        }
-
-        /* first pass */
-        int flc = 0; // count fluid cells
-        for(int i=1; i<=imax; i++) {
-            for(int j=1; j<=jmax; j++) {
-                if(GEO2(i,j)) {
-                    FLAGS2(i,j) = OC;
+                if(GEO2(i,j) == 0) {
+                    FLAGS2(i, j) = FC;
+                    flc += 1;
                 } else {
-                    FLAGS2(i,j) = FC;
-                    flc++;
+                    /* check for neighboring fluid cells to aid computation
+                     * of boundary values
+                     */
+                    FLAGS2(i,j) = OC;
+                    if(GEO2(i-1,j) == 0) {
+                        FLAGS2(i,j) += B_W;
+                    }
+                    if(GEO2(i+1,j) == 0) {
+                        FLAGS2(i,j) += B_E;
+                    }
+                    if(GEO2(i,j-1) == 0) {
+                        FLAGS2(i,j) += B_S;
+                    }
+                    if(GEO2(i,j+1) == 0) {
+                        FLAGS2(i,j) += B_N;
+                    }
                 }
-            }
-        }
-
-        /* second pass to update boundary information */
-        for(int i=1; i<=imax; i++) {
-            for(int j=1; j<=jmax; j++) {
-                if(!(FLAGS2(i,j)&FC)) {
-                    FLAGS2(i,j) += (FLAGS2(i-1,j)&FC)*B_W
-                                 +(FLAGS2(i+1,j)&FC)*B_E
-                                 +(FLAGS2(i,j+1)&FC)*B_N
-                                 +(FLAGS2(i,j-1)&FC)*B_S;
-                }
-                /* TODO check flagfield for illegal obstacle cells */
             }
         }
 
         return_val = flc;
     """
 
-    nfc = weave.inline(code2, ['flags', 'geo'], define_macros=cmacros.flag_dict)
+    nfc = weave.inline(code, ['flags', 'geo'], define_macros=cmacros.flag_dict)
 
     return nfc, flags
