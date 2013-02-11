@@ -54,6 +54,25 @@ def generate_flagfield(geo):
             }
         }
 
+        int ff_illegal=1;
+        while(ff_illegal) {
+            ff_illegal=0;
+            /* "correct" flagfield */
+            for(int i=1; i<=imax; i++) {
+                for(int j=1; j<=jmax; j++) {
+                    if(!(FLAGS2(i,j)&FC)) {
+                        if(FLAGS2(i-1,j)&FC && FLAGS2(i+1,j)&FC ||
+                           FLAGS2(i,j-1)&FC && FLAGS2(i,j+1)&FC) {
+                            FLAGS2(i,j) += FC;
+                            ff_illegal = 1;
+                            flc += 1;
+                        }
+                    }
+                }
+            }           
+        }
+
+
         return_val = flc;
     """
 
