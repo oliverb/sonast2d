@@ -50,6 +50,7 @@ def solve(problem):
     t_end = problem.t_end
     output_n = 0
     output_delta = 1.0
+    put_out = True
 
     Y = numpy.array([(j-1)*dy+dy/2.0 for j in range(1, jmax+1)])
 
@@ -73,7 +74,7 @@ def solve(problem):
         it, res = pressure.solve_equation(p, rhs, flag, num_fc, dx, dy, eps, max_it, omega)
         velocity.velocity_correction(u, v, p, f, g, flag, dt, dx ,dy)
 
-        if t >= output_n*output_delta:
+        if put_out and t >= output_n*output_delta:
             vtk.output_vector(u, v, flag, dx, dy, output_n, basename+"uv")
             vtk.output_flag(flag, dx, dy, output_n, basename+"ff")
             output_n += 1

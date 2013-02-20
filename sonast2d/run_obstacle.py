@@ -196,7 +196,7 @@ def apps_config():
 
         cf.write('@@\n')
         cf.write('@ "Evaluator"\n')
-        cf.write('"Executable Name" string "/home/behm/uni/sonast2d/sonast2d/run_obstacle.py"\n')
+        cf.write('"Executable Name" string "run_obstacle.py"\n')
         cf.write('"Input Prefix" string "obstacle_input"\n')
         cf.write('"Output Prefix" string "obstacle_output"\n')
         cf.write('@@\n')
