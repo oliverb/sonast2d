@@ -16,12 +16,12 @@ def output_flag(flags, dx, dy, n, name="default_p"):
 
         f.write("X_COORDINATES %d double\n" % (imax, ))
         for i in range(1, imax+1):
-            f.write("%f " % (dx*(i-1)))
+            f.write("%f " % (dx*(i-1.+.5)))
         f.write("\n")
 
         f.write("Y_COORDINATES %d double\n" % (jmax, ))
         for j in range(1, jmax+1):
-            f.write("%f " % (dy*(j-1)))
+            f.write("%f " % (dy*(j-1.+.5)))
         f.write("\n")
 
         f.write("Z_COORDINATES 1 double\n0.0\n")
@@ -52,12 +52,12 @@ def output_scalar(p, flags, dx, dy, n, name="default_p"):
 
         f.write("X_COORDINATES %d double\n" % (imax, ))
         for i in range(1, imax+1):
-            f.write("%f " % (dx*(i-1)))
+            f.write("%f " % (dx*(i-1.+.5)))
         f.write("\n")
 
         f.write("Y_COORDINATES %d double\n" % (jmax, ))
         for j in range(1, jmax+1):
-            f.write("%f " % (dy*(j-1)))
+            f.write("%f " % (dy*(j-1.+.5)))
         f.write("\n")
 
         f.write("Z_COORDINATES 1 double\n0.0\n")
@@ -90,12 +90,12 @@ def output_vector(u, v, flags, dx, dy, n, name="default_v"):
 
         f.write("X_COORDINATES %d double\n" % (imax, ))
         for i in range(1, imax+1):
-            f.write("%f " % (dx*(i-1)))
+            f.write("%f " % (dx*(i-1.+.5)))
         f.write("\n")
 
         f.write("Y_COORDINATES %d double\n" % (jmax, ))
         for j in range(1, jmax+1):
-            f.write("%f " % (dy*(j-1)))
+            f.write("%f " % (dy*(j-1.+.5)))
         f.write("\n")
 
         f.write("Z_COORDINATES 1 double\n0.0\n")
