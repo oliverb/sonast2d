@@ -16,7 +16,7 @@ def gen_geo(imax, jmax, xlength ,ylength, indicator):
 
     for j in range(1, jmax+1):
         for i in range(1, imax+1):
-            geo[i,j] = indicator(i*dx, j*dy)
+            geo[i,j] = indicator((i-1.)*dx+.5*dx, (j-1.)*dy+.5*dy)
 
     return geo
 
@@ -48,7 +48,7 @@ class ObstacleFlow:
     def __init__(self, c, imax=192, jmax=64, name="obstacle"):
         self.xlength = 24.0
         self.ylength = 8.0
-        self.Re = 80.0
+        self.Re = 100.0
         self.t_end = 100.0
 
         self.boundary = {'scenario':'obstacle',
@@ -62,11 +62,11 @@ class ObstacleFlow:
         self.jmax = jmax
 
         h = self.ylength/self.jmax
-        self.omega = 2.0-2*pi*h
+        self.omega = 1.7 #2.0-2*pi*h
         self.tau = 0.5
         self.alpha = 0.9
-        self.eps = 1E-7
-        self.max_it = 5000
+        self.eps = 1E-10
+        self.max_it = 500
 
         self.name = name
 
@@ -118,7 +118,7 @@ def nice_coeff(N, border='yes'):
             return numpy.dot(Bineq, c)
         numpy.dot(B, c)
 
-    mini = scipy.optimize.fmin_slsqp(grad_func, f, fprime=dgrad_func, f_ieqcons=ineq_func)
+    mini = scipy.optimize.fmin_slsqp(grad_func, f)
     
     return mini
 
@@ -227,7 +227,7 @@ def main():
         apps_routine()
     else:
         c = nice_coeff(10)
-        problem = ObstacleFlow(c)
+        problem = ObstacleFlow(c,imax=384,jmax=128)
         solver.solve(problem)
 
 
