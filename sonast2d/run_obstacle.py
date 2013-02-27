@@ -116,9 +116,10 @@ def nice_coeff(N, border='yes'):
     def ineq_func(c):
         if border=='no':
             return numpy.dot(Bineq, c)
-        numpy.dot(B, c)
+        return numpy.dot(B, c)
 
-    mini = scipy.optimize.fmin_slsqp(grad_func, f)
+#    mini = scipy.optimize.fmin_slsqp(grad_func, f)
+    mini = scipy.optimize.fmin_slsqp(grad_func, f, fprime=dgrad_func, f_ieqcons=ineq_func)
     
     return mini
 
@@ -226,7 +227,7 @@ def main():
     elif len(sys.argv) == 4:
         apps_routine()
     else:
-        c = nice_coeff(10)
+        c = nice_coeff(100)
         problem = ObstacleFlow(c,imax=384,jmax=128)
         solver.solve(problem)
 

@@ -14,14 +14,12 @@ def obstacle_chi(c):
     curve = bspline.BasisSpline(3, numpy.linspace(0.0, 4.0, N-2))
 
     def chi(x):
-        if x[0] <= 2.0:
+        if x[0] <= 4.0:
             return 0
-        if x[0] >= 6.0:
+        if x[0] >= 8.0:
             return 0
 
-        sval = curve.evaluate(c, x[0]-2.0)
-
-        print x[0], x[1], 4.0-sval, 4.0+sval
+        sval = curve.evaluate(c, x[0]-4.0)
 
         if abs(x[1] - 4.0) <= sval:
             return 1
@@ -70,14 +68,15 @@ def nice_coeff(N, border='yes'):
     def ineq_func(c):
         if border=='no':
             return numpy.dot(Bineq, c)
-        numpy.dot(B, c)
+        return numpy.dot(B, c)
 
-    mini = scipy.optimize.fmin_slsqp(grad_func, f)
+#    mini = scipy.optimize.fmin_slsqp(grad_func, f)
+    mini = scipy.optimize.fmin_slsqp(grad_func, f, fprime=dgrad_func, f_ieqcons=ineq_func)
     
     return mini
 
 def main():
-    c = nice_coeff(6)
+    c = nice_coeff(100)
     print c
     chi = obstacle_chi(c)
     test = geo.make_bitfield(chi, dim=3, imax=3*64, jmax=64, kmax=64,
