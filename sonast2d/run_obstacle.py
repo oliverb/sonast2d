@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 from math import pi
 import sys
+import os
 
 import numpy
 import scipy.optimize
 
 from nast2d import solver
 from splines import bspline
+from tools import numpy2hopspack
 
 def gen_geo(imax, jmax, xlength ,ylength, indicator):
     dx = xlength/imax
@@ -45,10 +47,10 @@ def obstacle_chi(c):
 
 
 class ObstacleFlow:
-    def __init__(self, c, imax=192, jmax=64, name="obstacle"):
+    def __init__(self, c, imax=3*32, jmax=32, name="obstacle"):
         self.xlength = 24.0
         self.ylength = 8.0
-        self.Re = 100.0
+        self.Re = 10.0
         self.t_end = 100.0
 
         self.boundary = {'scenario':'obstacle',
@@ -66,7 +68,7 @@ class ObstacleFlow:
         self.tau = 0.5
         self.alpha = 0.9
         self.eps = 1E-10
-        self.max_it = 500
+        self.max_it = 5000
 
         self.name = name
 
@@ -122,7 +124,7 @@ def nice_coeff(N, border='yes'):
     
     return mini
 
-def apps_routine():
+def apps_routine(imax, jmax):
     ifilename = sys.argv[1]
     ofilename = sys.argv[2]
     tag = sys.argv[3]
@@ -131,11 +133,31 @@ def apps_routine():
 
     X = numpy.r_[0.0, Xpart, 0.0]
 
-    problem = ObstacleFlow(X, name="foo"+tag)
+    problem = ObstacleFlow(X, name="foo"+tag, imax=imax, jmax=jmax)
     max_diss = solver.solve(problem)
 
     with open(ofilename, "w") as ofile:
         print >>ofile, "%.12f"%max_diss
+
+def hops_config():
+    N = int(sys.argv[3])
+    x0 = nice_coeff(N, border='no')
+    curve= bspline.BasisSpline(3, numpy.linspace(0.0, 4.0, N-2))
+
+    # Ineq. constraints
+    lowvec = numpy.r_[numpy.zeros(N-1), pi/2.0]
+    upvec = numpy.r_[numpy.ones(N-1)*2.0, pi]
+
+    xvals = numpy.linspace(0.0, 4.0, N-1)
+    B = curve.compute_basis_matrix(xvals)
+    I = curve.compute_basis_integrals()
+    A = numpy.vstack([B, I])
+
+    configfile = sys.argv[2]
+
+    cur_file = os.path.abspath(__file__)
+    numpy2hopspack.makecfg(N, cur_file, configfile, x0=x0, Aineq=A, lineq=lowvec,
+                            uineq=upvec, P=8, gss_step_top=0.01)
     
 def apps_config():
     N = int(sys.argv[3])
@@ -222,12 +244,12 @@ def main():
     # problem = ObstacleFlow(c)
     # solver.solve(problem)
     if len(sys.argv) == 4 and sys.argv[1] == "apps_config":
-        apps_config()
+        hops_config()
     elif len(sys.argv) == 4:
-        apps_routine()
+        apps_routine(3*64, 64)
     else:
         c = nice_coeff(10)
-        problem = ObstacleFlow(c,imax=384,jmax=128)
+        problem = ObstacleFlow(c,imax=3*64,jmax=64)
         solver.solve(problem)
 
 
