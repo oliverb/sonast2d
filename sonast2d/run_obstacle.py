@@ -118,9 +118,10 @@ def nice_coeff(N, border='yes'):
     def ineq_func(c):
         if border=='no':
             return numpy.dot(Bineq, c)
-        numpy.dot(B, c)
+        return numpy.dot(B, c)
 
-    mini = scipy.optimize.fmin_slsqp(grad_func, f)
+#    mini = scipy.optimize.fmin_slsqp(grad_func, f)
+    mini = scipy.optimize.fmin_slsqp(grad_func, f, fprime=dgrad_func, f_ieqcons=ineq_func)
     
     return mini
 
