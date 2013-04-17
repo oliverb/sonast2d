@@ -1,4 +1,6 @@
 import numpy
+import pylab as py
+from mpl_toolkits.mplot3d import Axes3D
 from scipy import integrate
 
 class BasisSpline:
@@ -79,14 +81,61 @@ class BasisSpline:
         # line = line + str(sum(foo*c))
         # print line
 
+class BasisSplineSurface:
+    def __init__(self, order, xknots, yknots):
+        self.order = order
+        self.xknots = xknots
+        self.yknots = yknots
+
+        self.xspline = BasisSpline(self.order, self.xknots)
+        self.yspline = BasisSpline(self.order, self.yknots)
+
+    def evaluate(self, a, p):
+        if p.shape[0] != 2:
+            print "Error, wrong dimension ..."
+            return 0.0
+
+        x = p[0]
+        y = p[1]
+
+        # Could redo this as tensor product ...
+        # So much wasted cpu time :-(
+        ev = 0.0
+        xvals = self.xspline.compute_basis_values(x)
+        for i, Nx in enumerate(xvals):
+            # Sum of Y basis functions at y
+            SY = self.yspline.evaluate(a[i,:], y)
+            ev += Nx*SY
+
+        return ev
+
 if __name__ == '__main__':
-    test = BasisSpline(3, numpy.array([0.0, 4.0/3.0, 8.0/3.0, 4.0]))
-    c = numpy.array([0.0, 0.8, 0.979795, 0.979795, 0.8, 0.0])
-    bI = test.compute_basis_integrals()
-    print sum(c*bI)
-    func = lambda x: test.evaluate(c, x)
-    cI, err = integrate.quad(func, 0.0, 4.0) 
-    print cI
+    xk = numpy.array([0.0,  1.0])
+    yk = numpy.array([0.0,  1.0])
+    a = numpy.array([[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], 
+                     [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]])
+
+    sf = BasisSplineSurface(3, xk, yk)
+
+    X = numpy.linspace(0.0, 1.0, 25)
+    X, Y = numpy.meshgrid(X, X)
+
+    Z = []
+    for xs, ys in zip(X, Y):
+        zs = []
+        for x, y in zip(xs, ys):
+            zs.append(sf.evaluate(a, numpy.array([x,y])))
+        Z.append(numpy.array(zs))
+    Z = numpy.array(Z)
+
+    fig = py.figure()
+    ax = Axes3D(fig)
+
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap='hot')
+
+    py.show()
+
+
 
 
 
